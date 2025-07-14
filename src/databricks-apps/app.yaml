@@ -1,0 +1,10 @@
+command: [
+  "python",
+  "app.py"
+]
+
+env:
+  - name: "SERVING_ENDPOINT"
+    value: "agents_users-jeanne_choo-jeanne_chatbot"
+  - name: "POSTGRES_INSTANCE_NAME"
+    value: "jeannelb"

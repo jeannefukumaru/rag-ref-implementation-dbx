@@ -1,0 +1,7 @@
+resources::
+  model_serving_endpoints:
+    name: 'agents_users-jeanne_choo-jeanne_chatbot'
+    permission_level: 'CAN_QUERY'
+    tags:
+      - key: 'team'
+        value: 'data science'

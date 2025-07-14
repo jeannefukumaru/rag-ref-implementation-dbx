@@ -1,0 +1,40 @@
+new_cluster: &new_cluster
+  new_cluster:
+    num_workers: 1
+    spark_version: 16.4.x-scala2.12
+    node_type_id: i3.xlarge
+    custom_tags:
+      clusterSource: genai-dabs
+
+common_permissions: &permissions
+  permissions:
+    - level: CAN_VIEW
+      group_name: users
+
+resources:
+  jobs:
+    dataprep_job:
+      name: ${bundle.target}-${var.project_name}_dataprep
+      tags:
+        jeanne_chatbot: ""
+        target: ${bundle.target}
+      job_clusters:
+        - job_cluster_key: dataprep_job_cluster
+          <<: *new_cluster
+      tasks:
+        - task_key: dataprep
+          job_cluster_key: dataprep_job_cluster
+          notebook_task:
+            notebook_path: ../data/01_sample_data_pipeline.py
+            base_parameters:
+              env: ${bundle.target}
+              source_doc_folder: ${var.source_doc_folder}
+              catalog_name: ${var.catalog_name}
+              schema_name: ${var.schema_name}
+              project_name: ${var.project_name}
+              embedding_endpoint_name: ${var.embedding_endpoint_name}
+              vector_search_endpoint_name: ${var.vector_search_endpoint_name}
+              vector_search_index_name: ${var.vector_search_index_name}
+          libraries:
+          - requirements: requirements.txt
+      <<: *permissions

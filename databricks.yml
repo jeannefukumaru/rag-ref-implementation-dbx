@@ -1,0 +1,53 @@
+bundle:
+  name: dbx_docs_chatbot
+
+variables:
+  project_name: 
+    description: Name of the project
+  source_doc_folder:
+    description: UC Volume path containing source files
+  catalog_name:
+    description: Name of catalog to use for all ML artifacts
+  schema_name:
+    description: Name of schema to use for all ML artifacts. Must be present inside catalog
+  vector_search_endpoint_name:
+    description: Name of vector search endpoint
+  vector_search_index_name:
+    description: Name of search index used in vector database
+  embedding_endpoint_name:
+    description: Name of model serving endpoint for embeddings
+  experiment_name:
+    description: Experiment name for the model training. This refers to the full workspace-path, e.g. /Users/<user_name>/<experiment_name>
+  model_name:
+    description: Model name for the model training.
+  host:
+    description: url of host workspace for model serving as well as where other endpoints are deployed, e.g. embedding and judge-llm
+  judge_endpoint:
+    description: Name of judge-llm endpoint
+  llm_endpoint:
+    description: Name of llm endpoint used for the RAG application
+  serving_endpoint_name:
+    description: The name of the serving endpoint for the chatbot
+
+include:
+  # Assets folder contains ML artifact assets for the ml project that defines model and experiment
+  # And workflows assets for the ml project including model training -> validation -> deployment,
+  # feature engineering,  batch inference, data monitoring, metric refresh, alerts and triggering retraining
+  - "./src/assets/*.yml"
+  - "./configuration.yml"
+
+# Deployment Target specific values for workspace
+targets:
+  dev:
+    default: true
+    mode: development
+    workspace:
+      host: https://e2-demo-field-eng.cloud.databricks.com/
+
+  staging:
+    workspace:
+      host: https://e2-demo-field-eng.cloud.databricks.com/
+
+  prod:
+    workspace:
+      host: https://e2-demo-field-eng.cloud.databricks.com/

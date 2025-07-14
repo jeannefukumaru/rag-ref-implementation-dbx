@@ -1,0 +1,26 @@
+config_variables: &config_variables
+  project_name: dbx_docs_chatbot
+  source_doc_folder: /Volumes/users/dbx_docs/docs_volume
+  catalog_name: users
+  schema_name: dbx_docs
+  vector_search_endpoint_name: one-env-shared-endpoint-0
+  vector_search_index_name: users.dbx_docs.dbx_docs_vs_index_direct_${bundle.target}
+  embedding_endpoint_name: one-env-shared-endpoint-0
+  experiment_name: /Users/${workspace.current_user.userName}/dbx_docs_chatbot_${bundle.target}
+  model_name: dbx_docs_chatbot_${bundle.target}
+  host: ${workspace.host}
+  judge_endpoint: databricks-claude-3-7-sonnet
+  llm_endpoint: databricks-claude-3-7-sonnet
+  serving_endpoint_name: dbx_docs_chatbot_${bundle.target}
+
+
+targets:
+  prod:
+    variables:
+      <<: *config_variables
+  staging:
+    variables:
+      <<: *config_variables
+  dev:
+    variables:
+      <<: *config_variables

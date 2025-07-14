@@ -1,0 +1,37 @@
+new_cluster: &new_cluster
+  new_cluster:
+    num_workers: 1
+    spark_version: 16.4.x-scala2.12
+    node_type_id: i3.xlarge
+    custom_tags:
+      clusterSource: genai-dabs
+
+common_permissions: &permissions
+  permissions:
+    - level: CAN_VIEW
+      group_name: users
+
+resources:
+  jobs:
+    chatbot_job:
+      name: ${bundle.target}-${var.project_name}_chain
+      tags:
+          jeanne_chatbot: ""
+          target: ${bundle.target}
+      job_clusters:
+        - job_cluster_key: chatbot_job_cluster
+          <<: *new_cluster
+      tasks:
+        - task_key: create_chatbot
+          job_cluster_key: chatbot_job_cluster
+          notebook_task:
+            notebook_path: ../chatbot/01_langgraph-tool-calling-agent.py
+            base_parameters:
+              env: ${bundle.target}
+              catalog_name: ${var.catalog_name}
+              schema_name: ${var.schema_name}
+              project_name: ${var.project_name}
+              llm_endpoint: ${var.llm_endpoint}
+              vector_search_endpoint_name: ${var.vector_search_endpoint_name}
+              vector_search_index_name: ${var.vector_search_index_name}
+      <<: *permissions
