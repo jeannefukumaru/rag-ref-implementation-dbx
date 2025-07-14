@@ -1,4 +1,5 @@
-# jeanne_chatbot Chatbot
+# RAG reference architecture implementation 
+## Use case: RAG Chatbot based on Databricks Documentation
 ## Pre-requisites
 The following components are required to deploy and run this chatbot:
 - A [vector search endpoint](https://learn.microsoft.com/en-us/azure/databricks/generative-ai/create-query-vector-search#create-a-vector-search-endpoint)
