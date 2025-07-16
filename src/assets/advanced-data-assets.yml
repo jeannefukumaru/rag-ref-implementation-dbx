@@ -1,0 +1,83 @@
+resources:
+  pipelines:
+    pipeline_02_lakeflow_bronze_to_silver:
+      name: 02_lakeflow_bronze_to_silver
+      libraries:
+        - notebook:
+            path: ../data/adv_02_lakeflow_bronze-to-silver.py
+      schema: jeanne_choo
+      development: true
+      photon: true
+      catalog: users
+      serverless: true
+      budget_policy_id: 45e016d4-ace8-407d-870f-3f06123daee1
+    pipeline_03_lakeflow_silver_to_gold:
+      name: 03_lakeflow_silver_to_gold
+      libraries:
+        - notebook:
+            path: ../data/adv_03_lakeflow_silver-to-gold.py
+      schema: jeanne_choo
+      development: true
+      photon: true
+      catalog: users
+      serverless: true
+      budget_policy_id: 45e016d4-ace8-407d-870f-3f06123daee1
+
+  jobs:
+    unstructured_cdc_job:
+      name: advanced_data_pipeline_unstructured_cdc
+      tasks:
+        - task_key: 01_lakeflow-ingestion-to-bronze
+          email_notifications: {}
+          notebook_task:
+            notebook_path: ../data/adv_01_lakeflow_ingestion-to-bronze.py
+            source: WORKSPACE
+          run_if: ALL_SUCCESS
+          webhook_notifications: {}
+        - task_key: 02_lakeflow_bronze-to-silver
+          depends_on:
+            - task_key: 01_lakeflow-ingestion-to-bronze
+          email_notifications: {}
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.pipeline_02_lakeflow_bronze_to_silver.id}
+          run_if: ALL_SUCCESS
+          webhook_notifications: {}
+        - task_key: 03_lakeflow_silver-to-gold
+          depends_on:
+            - task_key: 02_lakeflow_bronze-to-silver
+          email_notifications: {}
+          pipeline_task:
+            full_refresh: true
+            pipeline_id: ${resources.pipelines.pipeline_03_lakeflow_silver_to_gold.id}
+          run_if: ALL_SUCCESS
+          webhook_notifications: {}
+        - task_key: 04_lakeflow_gold-to-vs-index
+          depends_on:
+            - task_key: 03_lakeflow_silver-to-gold
+          email_notifications: {}
+          notebook_task:
+            notebook_path: ../data/adv_04_lakeflow_gold-to-vs-index.py
+            source: WORKSPACE
+          run_if: ALL_SUCCESS
+          webhook_notifications: {}
+      parameters:
+        - name: gold_table_name
+          default: autoloader_etl_test_gold
+        - name: vector_search_endpoint_name
+          default: one-env-shared-endpoint-1
+        - name: catalog_name
+          default: users
+        - name: schema_name
+          default: jeanne_choo
+        - name: embedding_model_endpoint_name
+          default: databricks-gte-large-en
+        - name: silver_table_name
+          default: autoloader_etl_test_silver
+        - name: bronze_table_name
+          default: autoloader_etl_test_bronze
+      email_notifications: {}
+      max_concurrent_runs: 1
+      performance_target: STANDARD
+      queue:
+        enabled: true
+      webhook_notifications: {}

@@ -3,7 +3,7 @@
 # MAGIC dbutils.library.restartPython()
 
 # COMMAND ----------
-from jeanne_chatbot.tuning.utils.query import query_endpoint, display_chat
+from src.tuning.utils.query import query_endpoint, display_chat
 
 # initialize conversation
 messages = []
